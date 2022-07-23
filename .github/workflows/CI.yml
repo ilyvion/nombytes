@@ -1,0 +1,254 @@
+name: Rust
+
+on:
+    push:
+        branches: [master]
+        paths-ignore:
+            - ".gitignore"
+            - ".git-blame-ignore-revs"
+    pull_request:
+        branches: [master]
+        paths-ignore:
+            - ".gitignore"
+            - ".git-blame-ignore-revs"
+
+env:
+    CARGO_TERM_COLOR: always
+
+jobs:
+    check:
+        name: Check
+        runs-on: ubuntu-latest
+        env:
+            RUSTFLAGS: -Dwarnings
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  submodules: true
+
+            - name: Install Rust (stable)
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: stable
+                  override: true
+
+            - name: Cargo check
+              uses: actions-rs/cargo@v1
+              with:
+                  command: check
+                  args: --all-features
+
+    test:
+        name: Test
+        runs-on: ${{ matrix.os }}
+        needs: check
+        strategy:
+            fail-fast: false
+            matrix:
+                os: [ubuntu-latest, windows-latest, macos-latest]
+                toolchain: [stable, beta, nightly, "1.60"]
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v2
+              with:
+                  submodules: true
+
+            - name: Install ${{ matrix.toolchain }} toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: ${{ matrix.toolchain }}
+                  override: true
+                  components: rustfmt
+
+            - name: Install cargo-hack
+              uses: taiki-e/install-action@v1
+              with:
+                  tool: cargo-hack
+
+            - name: Cargo test
+              id: tests
+              uses: alexschrod/action-rs-cargo@feat/stdout-stderr
+              env:
+                  RUST_BACKTRACE: 1
+              with:
+                  command: hack
+                  args: --feature-powerset --keep-going test --message-format=json --no-fail-fast --workspace
+
+            - name: Write tests to file
+              if: always()
+              uses: DamianReeves/write-file-action@master
+              with:
+                  path: tests.json
+                  contents: ${{ steps.tests.outputs.stdout }}
+
+            - name: Cargo metadata
+              id: metadata
+              if: always()
+              uses: alexschrod/action-rs-cargo@feat/stdout-stderr
+              with:
+                  command: metadata
+                  args: --format-version 1
+
+            - name: Write metadata to file
+              if: always()
+              uses: DamianReeves/write-file-action@master
+              with:
+                  path: metadata.json
+                  contents: ${{ steps.metadata.outputs.stdout }}
+
+            - name: Create test annotations
+              if: always()
+              uses: alexschrod/cargo-test-annotations@master
+              with:
+                  metadata: "metadata.json"
+                  tests: "tests.json"
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  name: cargo-test-annotations (${{ matrix.os }}, ${{ matrix.toolchain }})
+
+    miri:
+        name: Miri
+        runs-on: ubuntu-latest
+        needs: check
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v2
+              with:
+                  submodules: true
+
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: nightly
+                  override: true
+                  components: miri
+
+            - name: Setup miri
+              run: cargo miri setup
+
+            # - name: Disable benchmarks
+            #   run: find -iname '*.rs' -exec sed -i -- 's/#\[bench\]/\/\/#\[bench\]/' {} +
+            #   shell: bash
+
+            - name: Run miri
+              run: cargo miri test --all-features
+
+    style:
+        name: Check Style
+        runs-on: ubuntu-latest
+        needs: check
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  submodules: true
+
+            - name: Install stable toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: stable
+                  override: true
+                  components: clippy, rustfmt
+
+            - name: Run cargo fmt
+              uses: actions-rs/cargo@v1
+              with:
+                  command: fmt
+                  args: --all -- --check
+
+            - name: Run cargo clippy
+              uses: actions-rs/clippy-check@v1
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  args: --all-features
+
+    coverage:
+        name: Report coverage
+        runs-on: ubuntu-latest
+        needs: test
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Install nightly toolchain
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: nightly
+                  override: true
+
+            - name: Install llvm tools
+              run: rustup component add llvm-tools-preview
+              shell: bash
+
+            - name: Install grcov
+              run: curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-x86_64-unknown-linux-gnu.tar.bz2 | tar jxf -
+              shell: bash
+
+            - name: Make executeable
+              run: chmod +x ./calculate-coverage.sh
+
+            - name: Disable benchmarks
+              run: find -iname '*.rs' -exec sed -i -- 's/#\[bench\]/\/\/#\[bench\]/' {} +
+              shell: bash
+
+            - name: Build, Instrument, Test
+              env:
+                  LLVM_PROFILE_FILE: target/debug/coverage/%p-%m.profraw
+                  CARGO_INCREMENTAL: 0
+                  RUSTFLAGS: -Zinstrument-coverage -Zprofile -Ccodegen-units=1 -Copt-level=0 -Clink-dead-code -Coverflow-checks=off -Zpanic_abort_tests -Cpanic=abort
+                  RUSTDOCFLAGS: -Cpanic=abort
+              run: ./calculate-coverage.sh
+
+            - name: Upload coverage
+              uses: codecov/codecov-action@v2
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+                  files: ./target/debug/coverage/lcov.info
+                  flags: rusttests
+                  name: Cargo Tests
+                  fail_ci_if_error: true
+
+    docs:
+        name: Documentation
+        runs-on: ubuntu-latest
+        needs: check
+        steps:
+            - name: Checkout source code
+              uses: actions/checkout@v2
+              with:
+                  persist-credentials: false
+
+            - name: Install Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  profile: minimal
+                  toolchain: nightly
+                  override: true
+
+            - name: Build documentation
+              uses: actions-rs/cargo@v1
+              with:
+                  command: doc
+                  args: --verbose --no-deps --all-features --workspace
+
+            - name: Finalize documentation
+              run: |
+                  #CRATE_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]' | cut -f2 -d"/")
+                  #echo "<meta http-equiv=\"refresh\" content=\"0; url=${CRATE_NAME/-/_}\">" > target/doc/index.html
+                  echo "<meta http-equiv=\"refresh\" content=\"0; url=encoding\">" > target/doc/index.html
+                  touch target/doc/.nojekyll
+
+            - name: Upload as artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: Documentation
+                  path: target/doc
+
+            - name: Deploy
+              uses: JamesIves/github-pages-deploy-action@v4
+              with:
+                  folder: target/doc
