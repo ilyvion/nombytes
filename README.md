@@ -41,7 +41,7 @@ feature.
 This library has been tested to work with `miette` down to v3.0.0 and
 has been marked as such in its `Cargo.toml`.
 
-## `std`
+### `std`
 
 Enabled by default; allows creating `NomBytes` directly from `String`s
 through a `From<String>` impl. With this feature turned off, this crate
