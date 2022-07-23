@@ -6,7 +6,7 @@
 [![Docs.io](https://docs.rs/nombytes/badge.svg)](https://docs.rs/nombytes)
 [![Docs master](https://img.shields.io/static/v1?label=docs&message=master&color=5479ab)](https://alexschrod.github.io/nombytes/)
 [![Rust](https://github.com/alexschrod/nombytes/actions/workflows/CI.yml/badge.svg)](https://github.com/alexschrod/nombytes/actions/workflows/CI.yml)
-[![codecov](https://codecov.io/gh/alexschrod/nombytes/branch/master/graph/badge.svg?token=C8UJJM7BVJ)](https://codecov.io/gh/alexschrod/nombytes)
+[![codecov](https://codecov.io/gh/alexschrod/nombytes/branch/master/graph/badge.svg?token=HHJWVMF7GS)](https://codecov.io/gh/alexschrod/nombytes)
 
 `nombytes` is a library that provides a wrapper for the `bytes::Bytes` byte
 container.
