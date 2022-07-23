@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["nombytes"] = [{"text":"impl <a class=\"trait\" href=\"https://doc.rust-lang.org/nightly/core/cmp/trait.Ord.html\" title=\"trait core::cmp::Ord\">Ord</a> for <a class=\"struct\" href=\"nombytes/struct.NomBytes.html\" title=\"struct nombytes::NomBytes\">NomBytes</a>","synthetic":false,"types":["nombytes::NomBytes"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()

@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="NomBytes"><meta name="keywords" content="rust, rustlang, rust-lang, nombytes"><title>nombytes - Rust</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../ayu.css" disabled><link rel="stylesheet" type="text/css" href="../dark.css" disabled><link rel="stylesheet" type="text/css" href="../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../storage.js"></script><script defer src="../crates.js"></script><script defer src="../main.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="mobile-topbar"><button class="sidebar-menu-toggle">&#9776;</button><a class="sidebar-logo" href="../nombytes/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"></h2>
+    </nav>
+    <nav class="sidebar"><a class="sidebar-logo" href="../nombytes/index.html"><div class="logo-container"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></div>
+        </a><h2 class="location"><a href="#">Crate nombytes</a></h2><div class="sidebar-elems"><div class="block"><ul><li class="version">Version 0.1.0</li><li><a id="all-types" href="all.html">All Items</a></li></ul></div><section><div class="block"><ul><li><a href="#structs">Structs</a></li><li><a href="#enums">Enums</a></li></ul></div></section></div></nav><main><div class="width-limiter"><div class="sub-container"><a class="sub-logo-container" href="../nombytes/index.html"><img class="rust-logo" src="../rust-logo.svg" alt="logo"></a><nav class="sub"><form class="search-form"><div class="search-container"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><button type="button">?</button></div><div id="settings-menu" tabindex="-1">
+                                <a href="../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../wheel.svg"></a></div>
+                        </div></form></nav></div><section id="main-content" class="content"><div class="main-heading">
+    <h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">nombytes</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span></h1><span class="out-of-band"><a class="srclink" href="../src/nombytes/lib.rs.html#1-426">source</a> · <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span></div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><h2 id="nombytes"><a href="#nombytes">NomBytes</a></h2>
+<p><a href="https://crates.io/crates/nombytes"><img src="https://img.shields.io/crates/v/nombytes" alt="Crates.io" /></a>
+<a href="https://crates.io/crates/nombytes"><img src="https://img.shields.io/crates/l/nombytes" alt="Crates.io" /></a>
+<a href="https://crates.io/crates/nombytes"><img src="https://img.shields.io/crates/d/nombytes" alt="Crates.io" /></a>
+<a href="https://docs.rs/nombytes"><img src="https://docs.rs/nombytes/badge.svg" alt="Docs.io" /></a>
+<a href="https://alexschrod.github.io/nombytes/"><img src="https://img.shields.io/static/v1?label=docs&amp;message=master&amp;color=5479ab" alt="Docs master" /></a>
+<a href="https://github.com/alexschrod/nombytes/actions/workflows/CI.yml"><img src="https://github.com/alexschrod/nombytes/actions/workflows/CI.yml/badge.svg" alt="Rust" /></a>
+<a href="https://codecov.io/gh/alexschrod/nombytes"><img src="https://codecov.io/gh/alexschrod/nombytes/branch/master/graph/badge.svg?token=C8UJJM7BVJ" alt="codecov" /></a></p>
+<p><code>nombytes</code> is a library that provides a wrapper for the <code>bytes::Bytes</code> byte
+container.</p>
+<p>I originally made this so that I could have a function take a file name path
+and return parsed values that still had references to the loaded file without
+running into the lifetime issues associated with <code>&amp;[u8]</code> and <code>&amp;str</code> that
+would prevent me from doing so. I decided to release it as a crate so that
+others can make use of my efforts too.</p>
+<p>This library has been tested to work with <code>bytes</code> down to v5.3.0 and <code>nom</code> down
+to v6.0.0 and has been marked as such in its <code>Cargo.toml</code>.</p>
+<h3 id="usage"><a href="#usage">Usage</a></h3>
+<p>Put this in your <code>Cargo.toml</code>:</p>
+<div class="example-wrap"><pre class="language-toml"><code>[dependencies]
+nombytes = &quot;0.1&quot;</code></pre></div><h3 id="features"><a href="#features">Features</a></h3><h4 id="miette"><a href="#miette"><code>miette</code></a></h4>
+<p>With the <code>miette</code> feature enabled, the <code>NomBytes</code> implements its
+<code>SourceCode</code> trait so it can be used directly with <code>miette</code>’s
+<code>#[source_code]</code> error attribute. This feature also enables the <code>std</code>
+feature.</p>
+<p>This library has been tested to work with <code>miette</code> down to v3.0.0 and
+has been marked as such in its <code>Cargo.toml</code>.</p>
+<h3 id="std"><a href="#std"><code>std</code></a></h3>
+<p>Enabled by default; allows creating <code>NomBytes</code> directly from <code>String</code>s
+through a <code>From&lt;String&gt;</code> impl. With this feature turned off, this crate
+is <code>#![no_std]</code> compatible.</p>
+<h3 id="example"><a href="#example">Example</a></h3>
+<p>Borrowed from the <code>nom</code> crate, using <code>NomBytes</code> instead of <code>&amp;str</code>. Had to be
+modified slightly because <code>NomBytes</code> acts as <code>&amp;[u8]</code> rather than as <code>&amp;str</code>.</p>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">nom</span>::{
+  <span class="ident">IResult</span>,
+  <span class="ident">bytes::complete</span>::{<span class="ident">tag</span>, <span class="ident">take_while_m_n</span>},
+  <span class="ident">combinator::map_res</span>,
+  <span class="ident">sequence::tuple</span>};
+<span class="kw">use</span> <span class="ident">nombytes::NomBytes</span>;
+
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>,<span class="ident">PartialEq</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Color</span> {
+  <span class="kw">pub</span> <span class="ident">red</span>:     <span class="ident">u8</span>,
+  <span class="kw">pub</span> <span class="ident">green</span>:   <span class="ident">u8</span>,
+  <span class="kw">pub</span> <span class="ident">blue</span>:    <span class="ident">u8</span>,
+}
+
+<span class="kw">fn</span> <span class="ident">from_hex</span>(<span class="ident">input</span>: <span class="ident">NomBytes</span>) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u8</span>, <span class="ident">std::num::ParseIntError</span><span class="op">&gt;</span> {
+  <span class="ident">u8::from_str_radix</span>(<span class="ident">input</span>.<span class="ident">to_str</span>(), <span class="number">16</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">is_hex_digit</span>(<span class="ident">c</span>: <span class="ident">u8</span>) -&gt; <span class="ident">bool</span> {
+  (<span class="ident">c</span> <span class="kw">as</span> <span class="ident">char</span>).<span class="ident">is_digit</span>(<span class="number">16</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">hex_primary</span>(<span class="ident">input</span>: <span class="ident">NomBytes</span>) -&gt; <span class="ident">IResult</span><span class="op">&lt;</span><span class="ident">NomBytes</span>, <span class="ident">u8</span><span class="op">&gt;</span> {
+  <span class="ident">map_res</span>(
+    <span class="ident">take_while_m_n</span>(<span class="number">2</span>, <span class="number">2</span>, <span class="ident">is_hex_digit</span>),
+    <span class="ident">from_hex</span>
+  )(<span class="ident">input</span>)
+}
+
+<span class="kw">fn</span> <span class="ident">hex_color</span>(<span class="ident">input</span>: <span class="ident">NomBytes</span>) -&gt; <span class="ident">IResult</span><span class="op">&lt;</span><span class="ident">NomBytes</span>, <span class="ident">Color</span><span class="op">&gt;</span> {
+  <span class="kw">let</span> (<span class="ident">input</span>, <span class="ident">output</span>) <span class="op">=</span> <span class="ident">tag</span>(<span class="string">&quot;#&quot;</span>)(<span class="ident">input</span>)<span class="question-mark">?</span>;
+
+  <span class="kw">let</span> (<span class="ident">input</span>, (<span class="ident">red</span>, <span class="ident">green</span>, <span class="ident">blue</span>)) <span class="op">=</span> <span class="ident">tuple</span>((<span class="ident">hex_primary</span>, <span class="ident">hex_primary</span>, <span class="ident">hex_primary</span>))(<span class="ident">input</span>)<span class="question-mark">?</span>;
+
+  <span class="prelude-val">Ok</span>((<span class="ident">input</span>, <span class="ident">Color</span> { <span class="ident">red</span>, <span class="ident">green</span>, <span class="ident">blue</span> }))
+}
+
+<span class="kw">fn</span> <span class="ident">main</span>() {
+  <span class="macro">assert!</span>(<span class="macro">matches!</span>(<span class="ident">hex_color</span>(<span class="ident">NomBytes::from</span>(<span class="string">&quot;#2F14DF&quot;</span>)),
+    <span class="prelude-val">Ok</span>((<span class="ident">r</span>, <span class="ident">Color</span> {
+      <span class="ident">red</span>: <span class="number">47</span>,
+      <span class="ident">green</span>: <span class="number">20</span>,
+      <span class="ident">blue</span>: <span class="number">223</span>,
+    })) <span class="kw">if</span> <span class="ident">r</span>.<span class="ident">to_str</span>() <span class="op">==</span> <span class="string">&quot;&quot;</span>));
+}</code></pre></div>
+<h3 id="license"><a href="#license">License</a></h3>
+<p>Licensed under either of</p>
+<ul>
+<li>Apache License, Version 2.0, (<a href="LICENSE-APACHE">LICENSE-APACHE</a> or <a href="http://www.apache.org/licenses/LICENSE-2.0">http://www.apache.org/licenses/LICENSE-2.0</a>)</li>
+<li>MIT license (<a href="LICENSE-MIT">LICENSE-MIT</a> or <a href="http://opensource.org/licenses/MIT">http://opensource.org/licenses/MIT</a>)</li>
+</ul>
+<p>at your option.</p>
+<h4 id="contribution"><a href="#contribution">Contribution</a></h4>
+<p>Unless you explicitly state otherwise, any contribution intentionally submitted
+for inclusion in the work by you, as defined in the Apache-2.0 license, shall be
+dual licensed as above, without any additional terms or conditions.</p>
+</div></details><h2 id="structs" class="small-section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="struct" href="struct.NomBytes.html" title="nombytes::NomBytes struct">NomBytes</a></div><div class="item-right docblock-short"><p>A wrapper around [<code>bytes::Bytes</code>] to be able to use it with [<code>nom</code>].</p>
+</div></div></div><h2 id="enums" class="small-section-header"><a href="#enums">Enums</a></h2>
+<div class="item-table"><div class="item-row"><div class="item-left module-item"><a class="enum" href="enum.RangeType.html" title="nombytes::RangeType enum">RangeType</a></div><div class="item-right docblock-short"><p>An enum that can hold all the <code>Range*</code> types without being generic/trait
+based. We need this type because <code>SliceIndex&lt;T&gt;</code> is implemented for the
+individual <code>Range*</code> types rather than for the <code>RangeBounds&lt;T&gt;</code> trait that
+we could’ve otherwise used.</p>
+</div></div></div></section></div></main><div id="rustdoc-vars" data-root-path="../" data-current-crate="nombytes" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.64.0-nightly (848090dcd 2022-07-22)" ></div>
+</body></html>
