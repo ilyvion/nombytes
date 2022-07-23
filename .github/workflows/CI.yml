@@ -245,7 +245,7 @@ jobs:
               run: |
                   #CRATE_NAME=$(echo '${{ github.repository }}' | tr '[:upper:]' '[:lower:]' | cut -f2 -d"/")
                   #echo "<meta http-equiv=\"refresh\" content=\"0; url=${CRATE_NAME/-/_}\">" > target/doc/index.html
-                  echo "<meta http-equiv=\"refresh\" content=\"0; url=encoding\">" > target/doc/index.html
+                  echo "<meta http-equiv=\"refresh\" content=\"0; url=nombytes\">" > target/doc/index.html
                   touch target/doc/.nojekyll
 
             - name: Upload as artifact
