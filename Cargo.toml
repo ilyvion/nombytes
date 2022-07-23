@@ -1,0 +1,32 @@
+[package]
+name = "nombytes"
+version = "0.1.0"
+edition = "2021"
+description = "A library that provides a wrapper for the bytes::Bytes byte container for use with nom"
+license = "Apache-2.0 OR MIT"
+repository = "https://github.com/alexschrod/nombytes"
+readme = "README.md"
+keywords = ["nom", "bytes"]
+categories = ["parsing", "data-structures"]
+rust-version = "1.60"
+
+[dependencies.bytes]
+version = ">=0.5.3, <2.0.0"
+default-features = false
+
+[dependencies.nom]
+version = ">=6.0.0, <8.0.0"
+default-features = false
+
+[dependencies.miette]
+version = ">=3.0.0, <6.0.0"
+default-features = false
+optional = true
+
+[features]
+default = ["std"]
+miette = ["dep:miette", "std"]
+std = []
+
+[package.metadata.docs.rs]
+all-features = true
