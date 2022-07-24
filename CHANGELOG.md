@@ -14,6 +14,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `FindSubstring<&'_ [u8]>`
   - `FindSubstring<&'_ str>`
 
+### Fixed 🐛
+
+-   Lint CHANGELOG
+
 ## [0.1.1][] - 2022-07-24
 
 ### Added ✨
