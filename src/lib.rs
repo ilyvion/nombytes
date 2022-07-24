@@ -192,9 +192,7 @@ impl AsBytes for NomBytes {
 
 impl InputIter for NomBytes {
     type Item = u8;
-
     type Iter = Enumerate<Self::IterElem>;
-
     type IterElem = bytes::buf::IntoIter<Bytes>;
 
     #[inline]
@@ -212,15 +210,15 @@ impl InputIter for NomBytes {
     where
         P: Fn(Self::Item) -> bool,
     {
-        self.to_bytes().iter().position(|b| predicate(*b))
+        self.as_bytes().iter().position(|b| predicate(*b))
     }
 
     #[inline]
     fn slice_index(&self, count: usize) -> Result<usize, nom::Needed> {
-        if self.to_bytes().len() >= count {
+        if self.as_bytes().len() >= count {
             Ok(count)
         } else {
-            Err(Needed::new(count - self.to_bytes().len()))
+            Err(Needed::new(count - self.as_bytes().len()))
         }
     }
 }
@@ -322,7 +320,7 @@ macro_rules! nom_bytes_slice {
                     return self.clone();
                 }
 
-                let slice = self.to_bytes().slice(range.clone());
+                let slice = bytes.slice(range.clone());
                 if slice.is_empty() {
                     NomBytes(bytes, Some(RangeType::from(range)))
                 } else {
