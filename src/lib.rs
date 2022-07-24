@@ -40,6 +40,7 @@ mod miette;
 
 /// A wrapper around [`bytes::Bytes`] to be able to use it with [`nom`].
 #[derive(Clone, Debug)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct NomBytes(Bytes, Option<RangeType<usize>>);
 
 // Why the extra `Option<RangeType<usize>>`? Nom expects to be able to calculate

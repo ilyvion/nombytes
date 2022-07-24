@@ -23,9 +23,19 @@ version = ">=3.0.0, <6.0.0"
 default-features = false
 optional = true
 
+[dependencies.serde]
+version = "1"
+default-features = false
+features = ["derive"]
+optional = true
+
+[dev-dependencies]
+serde_json = "1"
+
 [features]
 default = ["std"]
 miette = ["dep:miette", "std"]
+serde = ["dep:serde", "bytes/serde"]
 std = []
 
 [package.metadata.docs.rs]

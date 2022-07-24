@@ -41,6 +41,11 @@ feature.
 This library has been tested to work with `miette` down to v3.0.0 and
 has been marked as such in its `Cargo.toml`.
 
+### `serde`
+
+Adds `serde::Serialize` and `serde::Deserialize` implementations to the types
+in this library to allow for using them with `serde`.
+
 ### `std`
 
 Enabled by default; allows creating `NomBytes` directly from `String`s
