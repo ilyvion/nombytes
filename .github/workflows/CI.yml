@@ -80,13 +80,14 @@ jobs:
               with:
                   command: hack
                   args: --feature-powerset --keep-going test --message-format=json --no-fail-fast --workspace
+                  stdout-file: tests.json
 
-            - name: Write tests to file
-              if: always()
-              uses: DamianReeves/write-file-action@master
-              with:
-                  path: tests.json
-                  contents: ${{ steps.tests.outputs.stdout }}
+            # - name: Write tests to file
+            #   if: always()
+            #   uses: DamianReeves/write-file-action@master
+            #   with:
+            #       path: tests.json
+            #       contents: ${{ steps.tests.outputs.stdout }}
 
             - name: Cargo metadata
               id: metadata
@@ -95,13 +96,14 @@ jobs:
               with:
                   command: metadata
                   args: --format-version 1
+                  stdout-file: metadata.json
 
-            - name: Write metadata to file
-              if: always()
-              uses: DamianReeves/write-file-action@master
-              with:
-                  path: metadata.json
-                  contents: ${{ steps.metadata.outputs.stdout }}
+            # - name: Write metadata to file
+            #   if: always()
+            #   uses: DamianReeves/write-file-action@master
+            #   with:
+            #       path: metadata.json
+            #       contents: ${{ steps.metadata.outputs.stdout }}
 
             - name: Create test annotations
               if: always()
