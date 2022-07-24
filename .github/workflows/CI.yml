@@ -235,6 +235,8 @@ jobs:
 
             - name: Build documentation
               uses: actions-rs/cargo@v1
+              env:
+                  RUSTDOCFLAGS: --cfg docsrs
               with:
                   command: doc
                   args: --verbose --no-deps --all-features --workspace
