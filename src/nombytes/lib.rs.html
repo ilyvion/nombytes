@@ -429,6 +429,67 @@
 <span id="423">423</span>
 <span id="424">424</span>
 <span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
+<span id="473">473</span>
+<span id="474">474</span>
+<span id="475">475</span>
+<span id="476">476</span>
+<span id="477">477</span>
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
 </pre><pre class="rust"><code><span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>), <span class="ident">no_std</span>)]</span>
 <span class="comment">//</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">docsrs</span>, <span class="ident">feature</span>(<span class="ident">doc_cfg</span>))]</span>
@@ -459,7 +520,8 @@
 <span class="kw">use</span> <span class="ident">core::ops</span>::{<span class="ident">Range</span>, <span class="ident">RangeFrom</span>, <span class="ident">RangeFull</span>, <span class="ident">RangeTo</span>};
 <span class="kw">use</span> <span class="ident">core::str::Utf8Error</span>;
 <span class="kw">use</span> <span class="ident">nom</span>::{
-    <span class="ident">AsBytes</span>, <span class="ident">Compare</span>, <span class="ident">InputIter</span>, <span class="ident">InputLength</span>, <span class="ident">InputTake</span>, <span class="ident">InputTakeAtPosition</span>, <span class="ident">Needed</span>, <span class="ident">Offset</span>, <span class="ident">Slice</span>,
+    <span class="ident">AsBytes</span>, <span class="ident">Compare</span>, <span class="ident">FindSubstring</span>, <span class="ident">InputIter</span>, <span class="ident">InputLength</span>, <span class="ident">InputTake</span>, <span class="ident">InputTakeAtPosition</span>,
+    <span class="ident">Needed</span>, <span class="ident">Offset</span>, <span class="ident">Slice</span>,
 };
 
 <span class="kw">mod</span> <span class="ident">range_type</span>;
@@ -788,6 +850,18 @@
     }
 }
 
+<span class="kw">impl</span> <span class="ident">Compare</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">compare</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">nom::CompareResult</span> {
+        <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">compare</span>(<span class="ident">t</span>.<span class="ident">as_bytes</span>())
+    }
+
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">compare_no_case</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="ident">nom::CompareResult</span> {
+        <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">compare_no_case</span>(<span class="ident">t</span>.<span class="ident">as_bytes</span>())
+    }
+}
+
 <span class="kw">impl</span> <span class="ident">Compare</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">compare</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">nom::CompareResult</span> {
@@ -797,6 +871,24 @@
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">compare_no_case</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="ident">nom::CompareResult</span> {
         <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">compare_no_case</span>(<span class="ident">t</span>.<span class="ident">as_bytes</span>())
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">FindSubstring</span><span class="op">&lt;</span><span class="ident">NomBytes</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
+    <span class="kw">fn</span> <span class="ident">find_substring</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">substr</span>: <span class="ident">NomBytes</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">find_substring</span>(<span class="ident">substr</span>.<span class="ident">as_bytes</span>())
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">FindSubstring</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> [<span class="ident">u8</span>]<span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
+    <span class="kw">fn</span> <span class="ident">find_substring</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">substr</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">find_substring</span>(<span class="ident">substr</span>)
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">FindSubstring</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;_</span> <span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
+    <span class="kw">fn</span> <span class="ident">find_substring</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">substr</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) -&gt; <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">find_substring</span>(<span class="ident">substr</span>)
     }
 }
 
@@ -834,6 +926,13 @@
     }
 }
 
+<span class="kw">impl</span> <span class="ident">From</span><span class="op">&lt;</span><span class="ident">Bytes</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">from</span>(<span class="ident">bytes</span>: <span class="ident">Bytes</span>) -&gt; <span class="self">Self</span> {
+        <span class="ident"><span class="self">Self</span>::new</span>(<span class="ident">bytes</span>)
+    }
+}
+
 <span class="comment">// We implement the eq/ord traits in terms of &amp;[u8] since it&#39;s both</span>
 <span class="comment">// cheap and easy:</span>
 
@@ -852,6 +951,29 @@
 <span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">NomBytes</span> {
     <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="ident">core::cmp::Ordering</span> {
         <span class="self">self</span>.<span class="ident">as_bytes</span>().<span class="ident">cmp</span>(<span class="ident">other</span>.<span class="ident">as_bytes</span>())
+    }
+}
+
+<span class="comment">// Borrowed and adapted from</span>
+<span class="comment">//  &lt;https://github.com/w4/nom-bytes/blob/2ede4dc22f1c303a2377c556d1a3b3f42464a0e7/src/lib.rs#L88&gt;</span>
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::NomBytes</span>;
+    <span class="kw">use</span> <span class="ident">bytes::Bytes</span>;
+    <span class="kw">use</span> <span class="ident">nom::bytes::complete::take_till</span>;
+    <span class="kw">use</span> <span class="ident">nom::AsBytes</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">it_works</span>() {
+        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="ident">NomBytes::from</span>(<span class="ident">Bytes::from_static</span>(
+            <span class="string">b&quot;this is my cool input, please don&#39;t copy from me!&quot;</span>,
+        ));
+
+        <span class="kw">let</span> (<span class="ident">rest</span>, <span class="ident">v</span>) <span class="op">=</span>
+            <span class="ident">take_till</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="kw">_</span>, <span class="ident">nom::error::Error</span><span class="op">&lt;</span><span class="ident">NomBytes</span><span class="op">&gt;</span><span class="op">&gt;</span>(<span class="op">|</span><span class="ident">v</span><span class="op">|</span> <span class="ident">v</span> <span class="op">==</span> <span class="string">b&#39;,&#39;</span>)(<span class="ident">input</span>).<span class="ident">unwrap</span>();
+
+        <span class="macro">assert_eq!</span>(<span class="ident">v</span>.<span class="ident">as_bytes</span>(), <span class="string">b&quot;this is my cool input&quot;</span>);
+        <span class="macro">assert_eq!</span>(<span class="ident">rest</span>.<span class="ident">as_bytes</span>(), <span class="string">b&quot;, please don&#39;t copy from me!&quot;</span>);
     }
 }
 </code></pre></div>
