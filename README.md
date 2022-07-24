@@ -9,7 +9,7 @@
 [![codecov](https://codecov.io/gh/alexschrod/nombytes/branch/master/graph/badge.svg?token=HHJWVMF7GS)](https://codecov.io/gh/alexschrod/nombytes)
 
 `nombytes` is a library that provides a wrapper for the `bytes::Bytes` byte
-container.
+container for use with nom.
 
 I originally made this so that I could have a function take a file name path
 and return parsed values that still had references to the loaded file without
