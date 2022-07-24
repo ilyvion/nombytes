@@ -1,8 +1,7 @@
 // We need this here because we can't set it on the output of the serde macros
 #![allow(clippy::type_repetition_in_bounds)]
 
-use core::ops::{Range, RangeBounds, RangeFrom, RangeFull, RangeTo};
-use core::slice::SliceIndex;
+use core::ops::{Index, Range, RangeBounds, RangeFrom, RangeFull, RangeTo};
 
 /// An enum that can hold all the `Range*` types without being generic/trait
 /// based. We need this type because `SliceIndex<T>` is implemented for the
@@ -16,7 +15,7 @@ use core::slice::SliceIndex;
     feature = "serde",
     serde(
         into = "range_type_serde::RangeTypeSerialized<T>",
-        from = "range_type_serde::RangeTypeSerialized<T>",
+        try_from = "range_type_serde::RangeTypeSerialized<T>",
         bound(
             serialize = "T: Clone, T: serde::Serialize",
             deserialize = "T: Clone, T: serde::de::Deserialize<'de>",
@@ -38,21 +37,21 @@ pub enum RangeType<T> {
 }
 
 impl<T: Clone> RangeType<T> {
-    pub(crate) fn slice<'s, U>(&self, t: &'s [U]) -> &'s [U]
+    // XXX: Disable clippy false positive
+    // <https://github.com/rust-lang/rust-clippy/issues/9076>
+    #[allow(clippy::trait_duplication_in_bounds)]
+    pub(crate) fn slice<'s, U>(&self, t: &'s U) -> &'s U
     where
-        RangeTo<T>: SliceIndex<[U], Output = [U]>,
-        //RangeToInclusive<T>: SliceIndex<[U], Output = [U]>,
-        RangeFrom<T>: SliceIndex<[U], Output = [U]>,
-        Range<T>: SliceIndex<[U], Output = [U]>,
-        //RangeInclusive<T>: SliceIndex<[U], Output = [U]>,
+        U: Index<RangeTo<T>, Output = U>
+            + Index<RangeFrom<T>, Output = U>
+            + Index<Range<T>, Output = U>
+            + ?Sized,
     {
         match self.clone() {
             Self::RangeFull(_) => t,
             Self::RangeTo(r) => &t[r],
-            //Self::RangeToInclusive(r) => &t[r],
             Self::RangeFrom(r) => &t[r],
             Self::Range(r) => &t[r],
-            //Self::RangeInclusive(r) => &t[r],
         }
     }
 }
@@ -62,10 +61,8 @@ impl<T> RangeBounds<T> for RangeType<T> {
         match self {
             RangeType::RangeFull(r) => r.start_bound(),
             RangeType::RangeTo(r) => r.start_bound(),
-            //RangeType::RangeToInclusive(r) => r.start_bound(),
             RangeType::RangeFrom(r) => r.start_bound(),
             RangeType::Range(r) => r.start_bound(),
-            //RangeType::RangeInclusive(r) => r.start_bound(),
         }
     }
 
@@ -73,10 +70,8 @@ impl<T> RangeBounds<T> for RangeType<T> {
         match self {
             RangeType::RangeFull(r) => r.end_bound(),
             RangeType::RangeTo(r) => r.end_bound(),
-            //RangeType::RangeToInclusive(r) => r.end_bound(),
             RangeType::RangeFrom(r) => r.end_bound(),
             RangeType::Range(r) => r.end_bound(),
-            //RangeType::RangeInclusive(r) => r.end_bound(),
         }
     }
 }
@@ -97,13 +92,78 @@ impl<T> From<RangeFull> for RangeType<T> {
     }
 }
 range_to_from!(RangeTo);
-//range_to_from!(RangeToInclusive);
 range_to_from!(RangeFrom);
 range_to_from!(Range);
-//range_to_from!(RangeInclusive);
+
+#[cfg(test)]
+mod tests {
+    use core::slice::SliceIndex;
+
+    use super::RangeType;
+
+    #[test]
+    fn slice() {
+        #[inline]
+        fn assert_slice(input: &[u8], rt: RangeType<usize>, expected: &[u8]) {
+            let output = rt.slice(input);
+
+            assert_eq!(output, expected);
+        }
+
+        #[inline]
+        fn assert_str(input: &str, rt: RangeType<usize>, expected: &str) {
+            let output = rt.slice(input);
+
+            assert_eq!(output, expected);
+        }
+
+        let input = b"hello, world!";
+        assert_slice(input, RangeType::RangeFull(..), input);
+        assert_slice(input, RangeType::RangeTo(..6), b"hello,");
+        assert_slice(input, RangeType::RangeFrom(7..), b"world!");
+        assert_slice(input, RangeType::Range(5..7), b", ");
+
+        let input = "hello, world!";
+        assert_str(input, RangeType::RangeFull(..), input);
+        assert_str(input, RangeType::RangeTo(..6), "hello,");
+        assert_str(input, RangeType::RangeFrom(7..), "world!");
+        assert_str(input, RangeType::Range(5..7), ", ");
+    }
+
+    #[test]
+    fn behaves_like_original_range() {
+        #[inline]
+        fn assert_identical_slice<T>(input: &str, range: T)
+        where
+            T: SliceIndex<str, Output = str> + Clone,
+            RangeType<usize>: From<T>,
+        {
+            let sliced = &input[range.clone()];
+
+            let range_type: RangeType<usize> = From::from(range);
+            let output = range_type.slice(input);
+
+            assert_eq!(sliced, output);
+        }
+
+        let input = "hello, world!";
+        assert_identical_slice(input, ..);
+        assert_identical_slice(input, ..6);
+        assert_identical_slice(input, 7..);
+        assert_identical_slice(input, 5..7);
+    }
+}
 
 #[cfg(feature = "serde")]
 mod range_type_serde {
+    // A bug makes this seemingly both required and superfluous, but I can
+    // only get it to consistently compile with it present, so it'll stay
+    // for now.
+    // <https://github.com/rust-lang/rust/issues/99637#issuecomment-1193619254>
+    #[allow(clippy::useless_attribute)]
+    #[allow(unused)]
+    extern crate alloc;
+
     use super::RangeType;
     use core::ops::{Bound, RangeBounds};
 
@@ -118,28 +178,40 @@ mod range_type_serde {
 
     impl<T: Clone> From<RangeType<T>> for RangeTypeSerialized<T> {
         fn from(r: RangeType<T>) -> Self {
-            let (kind, start, end) = match &r {
-                RangeType::RangeFull(r) => (0, r.start_bound(), r.end_bound()),
-                RangeType::RangeTo(r) => (1, r.start_bound(), r.end_bound()),
-                RangeType::RangeFrom(_) => (3, r.start_bound(), r.end_bound()),
-                RangeType::Range(_) => (4, r.start_bound(), r.end_bound()),
+            let kind = match &r {
+                RangeType::RangeFull(_) => 0,
+                RangeType::RangeTo(_) => 1,
+                RangeType::RangeFrom(_) => 3,
+                RangeType::Range(_) => 4,
             };
-            let (start, end) = (bound_to_option(start), bound_to_option(end));
+            let (start, end) = (
+                bound_to_option(r.start_bound()),
+                bound_to_option(r.end_bound()),
+            );
 
             Self { kind, start, end }
         }
     }
 
-    impl<T> From<RangeTypeSerialized<T>> for RangeType<T> {
-        fn from(rs: RangeTypeSerialized<T>) -> Self {
+    impl<T> TryFrom<RangeTypeSerialized<T>> for RangeType<T> {
+        type Error = RangeTypeDeserializationError;
+        fn try_from(rs: RangeTypeSerialized<T>) -> Result<Self, Self::Error> {
             let RangeTypeSerialized { kind, start, end } = rs;
-            match kind {
+            Ok(match kind {
                 0 => RangeType::RangeFull(..),
                 1 => RangeType::RangeTo(..end.unwrap()),
                 3 => RangeType::RangeFrom(start.unwrap()..),
                 4 => RangeType::Range(start.unwrap()..end.unwrap()),
-                _ => unreachable!(),
-            }
+                x => return Err(RangeTypeDeserializationError(x)),
+            })
+        }
+    }
+
+    #[derive(Copy, Clone, Debug)]
+    pub struct RangeTypeDeserializationError(u8);
+    impl core::fmt::Display for RangeTypeDeserializationError {
+        fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
+            write!(f, "Invalid RangeType `kind` value encountered: {}", self.0)
         }
     }
 
@@ -165,5 +237,20 @@ mod range_type_serde {
         roundtrip(RangeType::RangeTo(..42));
         roundtrip(RangeType::RangeFrom(42..));
         roundtrip(RangeType::Range(42..69));
+    }
+
+    #[test]
+    fn trigger_error() {
+        //extern crate alloc;
+
+        const INVALID_REPRESENTATION: &str = r#"{"kind": 42}"#;
+        let invalid_deserialized_error: Result<RangeType<usize>, _> =
+            serde_json::from_str(INVALID_REPRESENTATION);
+
+        assert!(invalid_deserialized_error.is_err());
+        assert_eq!(
+            &alloc::format!("{}", invalid_deserialized_error.unwrap_err()),
+            "Invalid RangeType `kind` value encountered: 42"
+        );
     }
 }

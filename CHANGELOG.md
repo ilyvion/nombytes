@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   `FindSubstring<NomBytes>`
     -   `FindSubstring<&'_ [u8]>`
     -   `FindSubstring<&'_ str>`
+-   Added another unit test to `RangeType<T>`
+
+### Changed 🔧
+
+-   Made `RangeType<T>` more generic and it can now slice `&str` in addition to `&[T]`.
 
 ### Fixed 🐛
 
