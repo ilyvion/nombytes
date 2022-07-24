@@ -173,11 +173,37 @@
 <span id="167">167</span>
 <span id="168">168</span>
 <span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
 </pre><pre class="rust"><code><span class="comment">// We need this here because we can&#39;t set it on the output of the serde macros</span>
 <span class="attribute">#![<span class="ident">allow</span>(<span class="ident">clippy::type_repetition_in_bounds</span>)]</span>
 
-<span class="kw">use</span> <span class="ident">core::ops</span>::{<span class="ident">Range</span>, <span class="ident">RangeBounds</span>, <span class="ident">RangeFrom</span>, <span class="ident">RangeFull</span>, <span class="ident">RangeTo</span>};
-<span class="kw">use</span> <span class="ident">core::slice::SliceIndex</span>;
+<span class="kw">use</span> <span class="ident">core::ops</span>::{<span class="ident">Index</span>, <span class="ident">Range</span>, <span class="ident">RangeBounds</span>, <span class="ident">RangeFrom</span>, <span class="ident">RangeFull</span>, <span class="ident">RangeTo</span>};
 
 <span class="doccomment">/// An enum that can hold all the `Range*` types without being generic/trait</span>
 <span class="doccomment">/// based. We need this type because `SliceIndex&lt;T&gt;` is implemented for the</span>
@@ -213,21 +239,21 @@
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span>: <span class="ident">Clone</span><span class="op">&gt;</span> <span class="ident">RangeType</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">slice</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> [<span class="ident">U</span>]) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> [<span class="ident">U</span>]
+    <span class="comment">// XXX: Disable clippy false positive</span>
+    <span class="comment">// &lt;https://github.com/rust-lang/rust-clippy/issues/9076&gt;</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">clippy::trait_duplication_in_bounds</span>)]</span>
+    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">slice</span><span class="op">&lt;</span><span class="lifetime">&#39;s</span>, <span class="ident">U</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">t</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">U</span>) -&gt; <span class="kw-2">&amp;</span><span class="lifetime">&#39;s</span> <span class="ident">U</span>
     <span class="kw">where</span>
-        <span class="ident">RangeTo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">SliceIndex</span><span class="op">&lt;</span>[<span class="ident">U</span>], <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">U</span>]<span class="op">&gt;</span>,
-        <span class="comment">//RangeToInclusive&lt;T&gt;: SliceIndex&lt;[U], Output = [U]&gt;,</span>
-        <span class="ident">RangeFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">SliceIndex</span><span class="op">&lt;</span>[<span class="ident">U</span>], <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">U</span>]<span class="op">&gt;</span>,
-        <span class="ident">Range</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>: <span class="ident">SliceIndex</span><span class="op">&lt;</span>[<span class="ident">U</span>], <span class="ident">Output</span> <span class="op">=</span> [<span class="ident">U</span>]<span class="op">&gt;</span>,
-        <span class="comment">//RangeInclusive&lt;T&gt;: SliceIndex&lt;[U], Output = [U]&gt;,</span>
+        <span class="ident">U</span>: <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeTo</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">U</span><span class="op">&gt;</span>
+            <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">RangeFrom</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">U</span><span class="op">&gt;</span>
+            <span class="op">+</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">Range</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>, <span class="ident">Output</span> <span class="op">=</span> <span class="ident">U</span><span class="op">&gt;</span>
+            <span class="op">+</span> <span class="question-mark">?</span><span class="ident">Sized</span>,
     {
         <span class="kw">match</span> <span class="self">self</span>.<span class="ident">clone</span>() {
             <span class="ident"><span class="self">Self</span>::RangeFull</span>(<span class="kw">_</span>) =&gt; <span class="ident">t</span>,
             <span class="ident"><span class="self">Self</span>::RangeTo</span>(<span class="ident">r</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">t</span>[<span class="ident">r</span>],
-            <span class="comment">//Self::RangeToInclusive(r) =&gt; &amp;t[r],</span>
             <span class="ident"><span class="self">Self</span>::RangeFrom</span>(<span class="ident">r</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">t</span>[<span class="ident">r</span>],
             <span class="ident"><span class="self">Self</span>::Range</span>(<span class="ident">r</span>) =&gt; <span class="kw-2">&amp;</span><span class="ident">t</span>[<span class="ident">r</span>],
-            <span class="comment">//Self::RangeInclusive(r) =&gt; &amp;t[r],</span>
         }
     }
 }
@@ -237,10 +263,8 @@
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">RangeType::RangeFull</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">start_bound</span>(),
             <span class="ident">RangeType::RangeTo</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">start_bound</span>(),
-            <span class="comment">//RangeType::RangeToInclusive(r) =&gt; r.start_bound(),</span>
             <span class="ident">RangeType::RangeFrom</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">start_bound</span>(),
             <span class="ident">RangeType::Range</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">start_bound</span>(),
-            <span class="comment">//RangeType::RangeInclusive(r) =&gt; r.start_bound(),</span>
         }
     }
 
@@ -248,10 +272,8 @@
         <span class="kw">match</span> <span class="self">self</span> {
             <span class="ident">RangeType::RangeFull</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">end_bound</span>(),
             <span class="ident">RangeType::RangeTo</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">end_bound</span>(),
-            <span class="comment">//RangeType::RangeToInclusive(r) =&gt; r.end_bound(),</span>
             <span class="ident">RangeType::RangeFrom</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">end_bound</span>(),
             <span class="ident">RangeType::Range</span>(<span class="ident">r</span>) =&gt; <span class="ident">r</span>.<span class="ident">end_bound</span>(),
-            <span class="comment">//RangeType::RangeInclusive(r) =&gt; r.end_bound(),</span>
         }
     }
 }
@@ -272,10 +294,42 @@
     }
 }
 <span class="macro">range_to_from!</span>(<span class="ident">RangeTo</span>);
-<span class="comment">//range_to_from!(RangeToInclusive);</span>
 <span class="macro">range_to_from!</span>(<span class="ident">RangeFrom</span>);
 <span class="macro">range_to_from!</span>(<span class="ident">Range</span>);
-<span class="comment">//range_to_from!(RangeInclusive);</span>
+
+<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
+<span class="kw">mod</span> <span class="ident">tests</span> {
+    <span class="kw">use</span> <span class="ident"><span class="kw">super</span>::RangeType</span>;
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">slice</span>() {
+        <span class="attribute">#[<span class="ident">inline</span>]</span>
+        <span class="kw">fn</span> <span class="ident">assert_slice</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">rt</span>: <span class="ident">RangeType</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">expected</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) {
+            <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">slice</span>(<span class="ident">input</span>);
+
+            <span class="macro">assert_eq!</span>(<span class="ident">output</span>, <span class="ident">expected</span>);
+        }
+
+        <span class="attribute">#[<span class="ident">inline</span>]</span>
+        <span class="kw">fn</span> <span class="ident">assert_str</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">rt</span>: <span class="ident">RangeType</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>, <span class="ident">expected</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) {
+            <span class="kw">let</span> <span class="ident">output</span> <span class="op">=</span> <span class="ident">rt</span>.<span class="ident">slice</span>(<span class="ident">input</span>);
+
+            <span class="macro">assert_eq!</span>(<span class="ident">output</span>, <span class="ident">expected</span>);
+        }
+
+        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="string">b&quot;hello, world!&quot;</span>;
+        <span class="ident">assert_slice</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeFull</span>(..), <span class="ident">input</span>);
+        <span class="ident">assert_slice</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeTo</span>(..<span class="number">6</span>), <span class="string">b&quot;hello,&quot;</span>);
+        <span class="ident">assert_slice</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeFrom</span>(<span class="number">7</span>..), <span class="string">b&quot;world!&quot;</span>);
+        <span class="ident">assert_slice</span>(<span class="ident">input</span>, <span class="ident">RangeType::Range</span>(<span class="number">5</span>..<span class="number">7</span>), <span class="string">b&quot;, &quot;</span>);
+
+        <span class="kw">let</span> <span class="ident">input</span> <span class="op">=</span> <span class="string">&quot;hello, world!&quot;</span>;
+        <span class="ident">assert_str</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeFull</span>(..), <span class="ident">input</span>);
+        <span class="ident">assert_str</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeTo</span>(..<span class="number">6</span>), <span class="string">&quot;hello,&quot;</span>);
+        <span class="ident">assert_str</span>(<span class="ident">input</span>, <span class="ident">RangeType::RangeFrom</span>(<span class="number">7</span>..), <span class="string">&quot;world!&quot;</span>);
+        <span class="ident">assert_str</span>(<span class="ident">input</span>, <span class="ident">RangeType::Range</span>(<span class="number">5</span>..<span class="number">7</span>), <span class="string">&quot;, &quot;</span>);
+    }
+}
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;serde&quot;</span>)]</span>
 <span class="kw">mod</span> <span class="ident">range_type_serde</span> {
