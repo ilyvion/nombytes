@@ -28,7 +28,8 @@ use core::iter::Enumerate;
 use core::ops::{Range, RangeFrom, RangeFull, RangeTo};
 use core::str::Utf8Error;
 use nom::{
-    AsBytes, Compare, InputIter, InputLength, InputTake, InputTakeAtPosition, Needed, Offset, Slice,
+    AsBytes, Compare, FindSubstring, InputIter, InputLength, InputTake, InputTakeAtPosition,
+    Needed, Offset, Slice,
 };
 
 mod range_type;
@@ -357,6 +358,18 @@ impl Compare<NomBytes> for NomBytes {
     }
 }
 
+impl Compare<&'_ [u8]> for NomBytes {
+    #[inline]
+    fn compare(&self, t: &[u8]) -> nom::CompareResult {
+        self.as_bytes().compare(t.as_bytes())
+    }
+
+    #[inline]
+    fn compare_no_case(&self, t: &[u8]) -> nom::CompareResult {
+        self.as_bytes().compare_no_case(t.as_bytes())
+    }
+}
+
 impl Compare<&'_ str> for NomBytes {
     #[inline]
     fn compare(&self, t: &str) -> nom::CompareResult {
@@ -366,6 +379,24 @@ impl Compare<&'_ str> for NomBytes {
     #[inline]
     fn compare_no_case(&self, t: &str) -> nom::CompareResult {
         self.as_bytes().compare_no_case(t.as_bytes())
+    }
+}
+
+impl FindSubstring<NomBytes> for NomBytes {
+    fn find_substring(&self, substr: NomBytes) -> Option<usize> {
+        self.as_bytes().find_substring(substr.as_bytes())
+    }
+}
+
+impl FindSubstring<&'_ [u8]> for NomBytes {
+    fn find_substring(&self, substr: &[u8]) -> Option<usize> {
+        self.as_bytes().find_substring(substr)
+    }
+}
+
+impl FindSubstring<&'_ str> for NomBytes {
+    fn find_substring(&self, substr: &str) -> Option<usize> {
+        self.as_bytes().find_substring(substr)
     }
 }
 
@@ -403,6 +434,13 @@ impl From<String> for NomBytes {
     }
 }
 
+impl From<Bytes> for NomBytes {
+    #[inline]
+    fn from(bytes: Bytes) -> Self {
+        Self::new(bytes)
+    }
+}
+
 // We implement the eq/ord traits in terms of &[u8] since it's both
 // cheap and easy:
 
@@ -421,5 +459,28 @@ impl PartialOrd for NomBytes {
 impl Ord for NomBytes {
     fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.as_bytes().cmp(other.as_bytes())
+    }
+}
+
+// Borrowed and adapted from
+//  <https://github.com/w4/nom-bytes/blob/2ede4dc22f1c303a2377c556d1a3b3f42464a0e7/src/lib.rs#L88>
+#[cfg(test)]
+mod tests {
+    use crate::NomBytes;
+    use bytes::Bytes;
+    use nom::bytes::complete::take_till;
+    use nom::AsBytes;
+
+    #[test]
+    fn it_works() {
+        let input = NomBytes::from(Bytes::from_static(
+            b"this is my cool input, please don't copy from me!",
+        ));
+
+        let (rest, v) =
+            take_till::<_, _, nom::error::Error<NomBytes>>(|v| v == b',')(input).unwrap();
+
+        assert_eq!(v.as_bytes(), b"this is my cool input");
+        assert_eq!(rest.as_bytes(), b", please don't copy from me!");
     }
 }
