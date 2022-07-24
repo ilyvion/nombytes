@@ -6,7 +6,7 @@ on:
             - "v*"
 
 jobs:
-    test:
+    publish:
         name: Publish
         runs-on: ubuntu-latest
         steps:
@@ -27,3 +27,19 @@ jobs:
               with:
                   command: publish
                   args: --verbose --all-features
+
+            - name: Set Environment Variables
+              run: |
+                  echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+                  echo "NO_PREFIX_VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_ENV
+
+            - name: Create GitHub Release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  body: https://crates.io/crates/nombytes/${{ env.NO_PREFIX_VERSION }}
+                  draft: false
+                  prerelease: false

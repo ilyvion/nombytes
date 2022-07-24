@@ -26,7 +26,7 @@ Put this in your `Cargo.toml`:
 
 ```toml
 [dependencies]
-nombytes = "0.1"
+nombytes = "0.1.1"
 ```
 
 ## Features
