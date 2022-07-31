@@ -82,13 +82,6 @@ jobs:
                   args: --feature-powerset --keep-going test --message-format=json --no-fail-fast --workspace
                   stdout-file: tests.json
 
-            # - name: Write tests to file
-            #   if: always()
-            #   uses: DamianReeves/write-file-action@master
-            #   with:
-            #       path: tests.json
-            #       contents: ${{ steps.tests.outputs.stdout }}
-
             - name: Cargo metadata
               id: metadata
               if: always()
@@ -97,13 +90,6 @@ jobs:
                   command: metadata
                   args: --format-version 1
                   stdout-file: metadata.json
-
-            # - name: Write metadata to file
-            #   if: always()
-            #   uses: DamianReeves/write-file-action@master
-            #   with:
-            #       path: metadata.json
-            #       contents: ${{ steps.metadata.outputs.stdout }}
 
             - name: Create test annotations
               if: always()
@@ -134,10 +120,6 @@ jobs:
 
             - name: Setup miri
               run: cargo miri setup
-
-            # - name: Disable benchmarks
-            #   run: find -iname '*.rs' -exec sed -i -- 's/#\[bench\]/\/\/#\[bench\]/' {} +
-            #   shell: bash
 
             - name: Run miri
               run: cargo miri test --all-features
@@ -187,31 +169,6 @@ jobs:
             - name: Generate code coverage
               run: |
                   cargo +nightly tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
-
-            # - name: Install nightly toolchain
-            #   uses: actions-rs/toolchain@v1
-            #   with:
-            #       profile: minimal
-            #       toolchain: nightly
-            #       override: true
-
-            # - name: Install llvm tools
-            #   run: rustup component add llvm-tools-preview
-            #   shell: bash
-
-            # - name: Install grcov
-            #   run: curl -L https://github.com/mozilla/grcov/releases/latest/download/grcov-x86_64-unknown-linux-gnu.tar.bz2 | tar jxf -
-            #   shell: bash
-
-            # - name: Make executeable
-            #   run: chmod +x ./calculate-coverage.sh
-
-            # - name: Disable benchmarks
-            #   run: find -iname '*.rs' -exec sed -i -- 's/#\[bench\]/\/\/#\[bench\]/' {} +
-            #   shell: bash
-
-            # - name: Build, Instrument, Test
-            #   run: ./calculate-coverage.sh
 
             - name: Upload coverage
               uses: codecov/codecov-action@v2
