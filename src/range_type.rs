@@ -167,6 +167,11 @@ mod range_type_serde {
     use super::RangeType;
     use core::ops::{Bound, RangeBounds};
 
+    const RANGE_FULL_TAG: u8 = 0;
+    const RANGE_TO_TAG: u8 = 1;
+    const RANGE_FROM_TAG: u8 = 3;
+    const RANGE_TAG: u8 = 4;
+
     #[derive(serde::Serialize, serde::Deserialize)]
     pub(crate) struct RangeTypeSerialized<T> {
         kind: u8,
@@ -179,10 +184,10 @@ mod range_type_serde {
     impl<T: Clone> From<RangeType<T>> for RangeTypeSerialized<T> {
         fn from(r: RangeType<T>) -> Self {
             let kind = match &r {
-                RangeType::RangeFull(_) => 0,
-                RangeType::RangeTo(_) => 1,
-                RangeType::RangeFrom(_) => 3,
-                RangeType::Range(_) => 4,
+                RangeType::RangeFull(_) => RANGE_FULL_TAG,
+                RangeType::RangeTo(_) => RANGE_TO_TAG,
+                RangeType::RangeFrom(_) => RANGE_FROM_TAG,
+                RangeType::Range(_) => RANGE_TAG,
             };
             let (start, end) = (
                 bound_to_option(r.start_bound()),
@@ -198,10 +203,10 @@ mod range_type_serde {
         fn try_from(rs: RangeTypeSerialized<T>) -> Result<Self, Self::Error> {
             let RangeTypeSerialized { kind, start, end } = rs;
             Ok(match kind {
-                0 => RangeType::RangeFull(..),
-                1 => RangeType::RangeTo(..end.unwrap()),
-                3 => RangeType::RangeFrom(start.unwrap()..),
-                4 => RangeType::Range(start.unwrap()..end.unwrap()),
+                RANGE_FULL_TAG => RangeType::RangeFull(..),
+                RANGE_TO_TAG => RangeType::RangeTo(..end.unwrap()),
+                RANGE_FROM_TAG => RangeType::RangeFrom(start.unwrap()..),
+                RANGE_TAG => RangeType::Range(start.unwrap()..end.unwrap()),
                 x => return Err(RangeTypeDeserializationError(x)),
             })
         }
