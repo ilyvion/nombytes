@@ -31,6 +31,7 @@ optional = true
 
 [dev-dependencies]
 serde_json = "1"
+miette = { version = "5", features = ["fancy"] }
 
 [features]
 default = ["std"]

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   `FindSubstring<&'_ [u8]>`
     -   `FindSubstring<&'_ str>`
 -   Added another unit test to `RangeType<T>`
+-   Added unit test for `miette::SourceCode` impl.
 
 ### Changed 🔧
 
