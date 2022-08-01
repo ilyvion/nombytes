@@ -444,7 +444,7 @@ impl From<&'_ [u8]> for NomBytes {
 
         let mut buf = BytesMut::with_capacity(byte_slice.len());
         buf.put(byte_slice);
-        Self::new(buf.into())
+        Self::new(buf.freeze())
     }
 }
 
