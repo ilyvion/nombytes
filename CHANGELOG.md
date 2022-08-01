@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     -   `FindSubstring<&'_ str>`
 -   Added another unit test to `RangeType<T>`
 -   Added unit test for `miette::SourceCode` impl.
+-   Added unit test for `*_bytes` methods after making empty slices on `NomBytes`.
 
 ### Changed 🔧
 

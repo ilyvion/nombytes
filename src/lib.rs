@@ -498,7 +498,7 @@ mod tests {
     use crate::NomBytes;
     use bytes::Bytes;
     use nom::bytes::complete::take_till;
-    use nom::AsBytes;
+    use nom::{AsBytes, Offset, Slice};
 
     #[test]
     fn it_works() {
@@ -511,5 +511,21 @@ mod tests {
 
         assert_eq!(v.as_bytes(), b"this is my cool input");
         assert_eq!(rest.as_bytes(), b", please don't copy from me!");
+    }
+
+    #[test]
+    fn empty_slice_works() {
+        let nb = NomBytes::new(Bytes::from("hello"));
+        let empty = nb.slice(3..3);
+        assert_eq!(nb.offset(&empty), 3);
+
+        // Even after re-slicing
+        let reslice = empty.slice(0..);
+        assert_eq!(nb.offset(&reslice), 3);
+
+        // Check that the various *_bytes functions have sensible values
+        assert_eq!(reslice.into_bytes(), Bytes::from_static(b""));
+        assert_eq!(empty.to_bytes(), Bytes::from_static(b""));
+        assert_eq!(empty.as_bytes(), b"");
     }
 }
