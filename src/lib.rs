@@ -161,6 +161,17 @@ impl NomBytes {
     ///
     /// See [`into_bytes`](Self::into_bytes) for an explanation of why this
     /// inner representation exists.
+    /// # Examples
+    ///
+    /// ```
+    /// use bytes::Bytes;
+    /// use nombytes::NomBytes;
+    ///
+    /// let nb = NomBytes::new(Bytes::from("hello"));
+    /// let (b, rt) = nb.into_raw();
+    /// assert_eq!(b.as_ref(), b"hello");
+    /// assert!(rt.is_none());
+    /// ```
     // I dunno what anyone would use this for, but... might as well
     // offer it.
     pub fn into_raw(self) -> (Bytes, Option<RangeType<usize>>) {
@@ -175,6 +186,18 @@ impl NomBytes {
     ///
     /// See [`into_bytes`](Self::into_bytes) for an explanation of why this
     /// inner representation exists.
+    /// # Examples
+    ///
+    /// ```
+    /// use bytes::Bytes;
+    /// use nom::AsBytes;
+    /// use nombytes::{NomBytes, RangeType};
+    ///
+    /// let b = Bytes::from("hello");
+    /// let rt = Some(RangeType::RangeTo(..3));
+    /// let nb = NomBytes::from_raw((b, rt));
+    /// assert_eq!(nb.as_bytes(), b"hel");
+    /// ```
     // I dunno what anyone would use this for, but... might as well
     // offer it.
     pub fn from_raw((bytes, range_type): (Bytes, Option<RangeType<usize>>)) -> Self {
