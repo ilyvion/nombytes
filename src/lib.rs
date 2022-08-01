@@ -426,7 +426,13 @@ impl FindSubstring<&'_ str> for NomBytes {
 impl Display for NomBytes {
     #[inline]
     fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-        write!(f, "{}", self.to_str())
+        match self.try_to_str() {
+            Ok(s) => write!(f, "{}", s),
+            Err(e) => {
+                write!(f, "<{}>", e)?;
+                Err(core::fmt::Error)
+            }
+        }
     }
 }
 
