@@ -53,7 +53,6 @@
 <span id="53">53</span>
 <span id="54">54</span>
 <span id="55">55</span>
-<span id="56">56</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::NomBytes</span>;
 <span class="kw">use</span> <span class="ident">miette::SourceCode</span>;
 <span class="kw">use</span> <span class="ident">nom::AsBytes</span>;
@@ -65,8 +64,8 @@
         <span class="ident">context_lines_before</span>: <span class="ident">usize</span>,
         <span class="ident">context_lines_after</span>: <span class="ident">usize</span>,
     ) -&gt; <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">std::boxed::Box</span><span class="op">&lt;</span><span class="kw">dyn</span> <span class="ident">miette::SpanContents</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">miette::MietteError</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">as_bytes</span>()
-            .<span class="ident">read_span</span>(<span class="ident">span</span>, <span class="ident">context_lines_before</span>, <span class="ident">context_lines_after</span>)
+        <span class="kw">let</span> <span class="ident">bytes</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">as_bytes</span>();
+        <span class="ident">bytes</span>.<span class="ident">read_span</span>(<span class="ident">span</span>, <span class="ident">context_lines_before</span>, <span class="ident">context_lines_after</span>)
     }
 }
 
@@ -106,7 +105,6 @@
         <span class="comment">// Let&#39;s simply check that the generated error output at the very least</span>
         <span class="comment">// contains the text from the span, which suggests that the `read_span`</span>
         <span class="comment">// worked like it should.</span>
-        <span class="macro">println!</span>(<span class="string">&quot;{output}&quot;</span>);
         <span class="macro">assert!</span>(<span class="ident">output</span>.<span class="ident">contains</span>(<span class="string">&quot;Hello&quot;</span>), <span class="string">&quot;{output}&quot;</span>);
     }
 }
